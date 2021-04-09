@@ -52,7 +52,12 @@ app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 // });
 
 //Production
-var server = app.listen(process.env.PORT || 3000, () => {
-  var port = server.address().port;
-  console.log("Express is working on port" + port);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(
+  PORT,
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+);
+// var server = app.listen(process.env.PORT || 3000, () => {
+//   var port = server.address().port;
+//   console.log("Express is working on port" + port);
+// });
