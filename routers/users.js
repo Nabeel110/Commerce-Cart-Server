@@ -63,6 +63,7 @@ router.post(
         res.status(422).json(jsonParser(null, { errors: errors.array() }));
         return;
       }
+      console.log(req.body);
       const { email } = req.body;
       const userExist = await User.findOne({ email });
 
@@ -75,11 +76,11 @@ router.post(
         name: req.body.name,
         email: req.body.email,
         passwordHash: bcrypt.hashSync(req.body.password, 10),
-        street: req.body.street,
-        apartment: req.body.apartment,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
+        street: req.body.street ? req.body.street : "",
+        apartment: req.body.apartment ? req.body.apartment : "",
+        city: req.body.city ? req.body.city : "",
+        zip: req.body.zip ? req.body.zip : "",
+        country: req.body.country ? req.body.country : "",
         phone: req.body.phone,
       });
 
