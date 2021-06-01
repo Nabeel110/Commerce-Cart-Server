@@ -57,7 +57,7 @@ router.get("/:id", async (req, res) => {
 router.post(
   "/",
   body("orderItems"),
-  body("quanitity"),
+  body("quantity"),
   body("product"),
   body("user"),
   async (req, res, next) => {

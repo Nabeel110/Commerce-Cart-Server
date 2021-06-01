@@ -138,12 +138,13 @@ router.post("/login", body("email").isEmail(), async (req, res, next) => {
         );
     } else {
       if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
+        console.log("here in paswd check");
         return res.status(200).json(
           jsonParser(
             {
               user: user.email,
               user_id: user.id,
-              token: generateToken(user.id),
+              token: generateToken(user.id, user.isAdmin),
             },
             "User Logged In successfully!"
           )
