@@ -26,30 +26,6 @@ router.get("/", async (req, res) => {
 });
 
 /*
-  @ desc  GET order by id
-  @ route /api/v1/orders/:id
-  @ access PUBLIC
-*/
-router.get("/:id", async (req, res) => {
-  const orderFound = await Order.findById(req.params.id)
-    .populate("user", "name")
-    .populate({
-      path: "orderItems",
-      populate: { path: "product", populate: "category" },
-    });
-
-  if (!orderFound) {
-    return res
-      .status(500)
-      .json(jsonParser(null, `Order with ${req.params.id} not Found`));
-  } else {
-    return res
-      .status(201)
-      .json(jsonParser(orderFound, "Order Retrieved Successfully!"));
-  }
-});
-
-/*
   @ desc  Create an Order
   @ route /api/v1/orders/
   @ access PUBLIC
@@ -68,11 +44,12 @@ router.post(
         res.status(422).json({ errors: errors.array() });
         return;
       }
+      console.log(req.body);
       const orderItemsIds = Promise.all(
         req.body.orderItems.map(async (orderItem) => {
           let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
-            product: orderItem.product,
+            product: orderItem.product.id,
           });
 
           newOrderItem = await newOrderItem.save();
@@ -125,6 +102,30 @@ router.post(
     }
   }
 );
+
+/*
+  @ desc  GET order by id
+  @ route /api/v1/orders/:id
+  @ access PUBLIC
+*/
+router.get("/:id", async (req, res) => {
+  const orderFound = await Order.findById(req.params.id)
+    .populate("user", "name")
+    .populate({
+      path: "orderItems",
+      populate: { path: "product", populate: "category" },
+    });
+
+  if (!orderFound) {
+    return res
+      .status(500)
+      .json(jsonParser(null, `Order with ${req.params.id} not Found`));
+  } else {
+    return res
+      .status(201)
+      .json(jsonParser(orderFound, "Order Retrieved Successfully!"));
+  }
+});
 
 /*
   @ desc  Update an Order Status by id
@@ -246,7 +247,7 @@ router.get("/get/totalorders", protect, admin, async (req, res) => {
   @ route /api/v1/orders/get/userorders/:id
   @ access PRIVATE
 */
-router.get("/get/userorders/:id", protect, async (req, res) => {
+router.get("/get/userorders/:id", async (req, res) => {
   const userOrderList = await Order.find({ user: req.params.id })
     .populate({
       path: "orderItems",
@@ -259,9 +260,15 @@ router.get("/get/userorders/:id", protect, async (req, res) => {
       .status(400)
       .json(jsonParser(null, "User OrderList not retrieved"));
   } else {
-    return res
-      .status(201)
-      .json(jsonParser(userOrderList, "User OrderList Succesfully Retrieved!"));
+    if (userOrderList.length > 0) {
+      return res
+        .status(201)
+        .json(
+          jsonParser(userOrderList, "User OrderList Succesfully Retrieved!")
+        );
+    } else {
+      return res.status(201).json(jsonParser(null, "User OrderList is Empty"));
+    }
   }
 });
 

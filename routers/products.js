@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const { protect, admin } = require("../middleware/authMiddleware");
 const router = express.Router();
 const multer = require("multer");
+const fs = require("fs");
 
 const FILE_TYPE_MAP = {
   "image/png": "png",
@@ -30,6 +31,30 @@ const storage = multer.diskStorage({
 });
 
 const uploadOptions = multer({ storage: storage });
+
+// router.get(`/public/uploads/:image`, async (req, res) => {
+//   //file search
+//   console.log(req.params.image);
+//   // return res.json({ message: "hello" });
+//   fs.readdir(process.cwd(), function (err, files) {
+//     if (err) {
+//       console.log(err);
+//       return;
+//     }
+//     console.log(files);
+//   });
+// });http://commerce-cart-14.herokuapp.com/public/uploads
+// "E:/6th semester/Mobile Application/Project/e-commerce-app/backend - Copy/public/uploads/"
+/// Show filesE:\6th semester\Mobile Application\Project\e-commerce-app\backend - Copy\public\uploads
+router.get("/public/uploads/:image", function (req, res) {
+  file = req.params.image;
+  var img = fs.readFileSync(
+    "E:/6th semester/Mobile Application/Project/e-commerce-app/backend - Copy/public/uploads/" +
+      file
+  );
+  res.writeHead(200, { "Content-Type": "image/jpg" });
+  res.end(img, "binary");
+});
 
 /*
   @ desc GET all Products
@@ -97,8 +122,10 @@ router.post(
     if (!file) {
       return res.status(400).json(jsonParser(null, "No Image File Uploaded"));
     }
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/products/public/uploads/`;
     let product = new Product({
       name: req.body.name,
       description: req.body.description,
@@ -116,11 +143,11 @@ router.post(
     product = await product.save();
 
     if (!product) {
-      res
+      return res
         .status(500)
         .json(jsonParser({ success: false }, "The product cannot be Created!"));
     } else {
-      res
+      return res
         .status(201)
         .json(jsonParser(product, "Product was created sucessfully!"));
     }
