@@ -267,7 +267,13 @@ router.get("/get/userorders/:id", async (req, res) => {
           jsonParser(userOrderList, "User OrderList Succesfully Retrieved!")
         );
     } else {
-      return res.status(201).json(jsonParser(null, "User OrderList is Empty"));
+      console.log(userOrderList);
+      return res
+        .status(201)
+        .json({
+          header: { error: 0, message: "User OrderList is Empty" },
+          body: { data: userOrderList },
+        });
     }
   }
 });

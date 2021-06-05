@@ -49,7 +49,8 @@ const uploadOptions = multer({ storage: storage });
 router.get("/public/uploads/:image", function (req, res) {
   file = req.params.image;
   var img = fs.readFileSync(
-    "http://commerce-cart-14.herokuapp.com/public/uploads/" + file
+    "E:/6th semester/Mobile Application/Project/e-commerce-app/backend - Copy/public/uploads/" +
+      file
   );
   res.writeHead(200, { "Content-Type": "image/jpg" });
   res.end(img, "binary");
