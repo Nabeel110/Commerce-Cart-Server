@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const jsonParser = require("../helpers/jsonParser");
 const { User } = require("../models/user");
+const dotenev = require("dotenv");
 
 const protect = async (req, res, next) => {
   let token;
